@@ -1,0 +1,56 @@
+#!/bin/bash
+# GIT BRANCH SELECTOR
+# Executes "git branch" using regex, so you don't have to type a
+# long branch name!
+
+# Setup: add "export PATH=$PATH:path/to/this/file" to your .bashrc
+# or .bash_profile
+
+# Usage: gbs <regex>
+
+if [ "$#" -ne 1 ]
+then
+  echo "Usage: gbs <regex>"
+  exit 1
+fi
+
+while [ ! -d ".git" -a ! -d "Desktop" ]; do
+  cd .. 
+done
+
+if [ ! -d .git ] 
+then
+  echo "gbs only works in git repositories"
+  exit 1
+fi
+
+cd .git
+cd refs
+cd heads
+
+branches=()
+
+for d in $(find ./* -maxdepth 2) ; do
+  num_child=`ls -al $d | grep -c -v ^d`
+  if [ $num_child -lt 2 ]
+  then
+    item=$d
+    item=${item:2}
+    branches+=("$item")
+  fi
+done
+
+if [ ${#branches[@]} -eq 0 ]
+then
+  echo "This repository doesn't appear to have any branches."
+  exit 1
+fi
+
+for i in "${branches[@]}"
+do
+  if [[ $i =~ ([A-Za-z])*${1}([A-Za-z])* ]]
+  then
+    cd ../../../
+    git checkout "$i"
+  fi
+done
