@@ -40,9 +40,9 @@ for d in $(find ./* -maxdepth 2) ; do
   fi
 done
 
-if [ ${#branches[@]} -eq 0 ]
+if [ ${#branches[@]} -lt 2 ]
 then
-  echo "This repository doesn't appear to have any branches."
+  echo "This repository appears to have one or zero branches."
   exit 1
 fi
 
